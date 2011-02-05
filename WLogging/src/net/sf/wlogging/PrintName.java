@@ -1,78 +1,159 @@
 package net.sf.wlogging;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.io.PrintStream;
 
+/**
+ * 日志主类<br/>
+ * 
+ * 使用方法在PrintName.paint子类中<br/>
+ * 
+ * @see PrintName.paint
+ * 
+ */
 public class PrintName {
-	
-	private String s;
-	private static boolean can = true;
-	private static final String INFO = "   "+"[INFO]"+"   ";
-	private static final String ERR = "   "+"[ERROR]"+"   ";
-	private static final String RN = "\r\n";
-	private static final String NULL = "";
 
-	
-	@SuppressWarnings("rawtypes")
-	public PrintName (Class c) {
-		this.s=c.getName();
+	public static final PrintStream out = System.out;
+	public static final PrintStream err = System.err;
+
+	static {
+		WLogPrintStream wlps = new WLogOutPrintStream(out, "   " + "[OUT]"
+				+ "   ");
+		System.setOut(wlps);
+
+		WLogPrintStream wlpserr = new WLogErrPrintStream(err, "   " + "[ERROR]"
+				+ "   ", 4);
+		System.setErr(wlpserr);
 	}
-	public static boolean setPaint (boolean c) {
-		can = c;
-		return can;
-	}
-	
-	public String getTime() {
-		  SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		  return df.format(new Date());
-	}
-	
-	private void paintTo(String x,String n,Object o) {
-		String a = getTime()+x+"("+s+")"+": "+ o+n ;
-		if(can == true) {
-			if(x.equals(ERR)){
-				System.err.print(a);
-			}
-			else if(x.equals(NULL)){
-				System.out.print(o);
-			}
-			else if(o.toString().equals(NULL)){
-				System.out.println();
-			}
-			else{
-				System.out.print(a);
-			}
-			
+
+	/**
+	 * 
+	 * 日志输出子类<br/>
+	 * 
+	 * 为调用者提供使用方法<br/>
+	 * 
+	 * <br/>
+	 * 
+	 * 请使用"import net.sf.wlogging.PrintName.paint;"在每个文件首位<br/>
+	 * 
+	 * <br/>
+	 * 
+	 * 有方法如下：<br/>
+	 * 
+	 * public static void debug(Object o)<br/>
+	 * 
+	 * public static void debugNl(Object o)<br/>
+	 * 
+	 * public static void start()<br/>
+	 * 
+	 * public static void info(Object o)<br/>
+	 * 
+	 * public static void infoNl(Object o)<br/>
+	 * 
+	 * public static void warn(Exception e)<br/>
+	 * 
+	 * public static void fatal(Throwable e)<br/>
+	 * 
+	 * public static void error(Error e)<br/>
+	 * 
+	 * 
+	 */
+	public static class paint {
+		private static WLogPrintStream wlpsdebug = new WLogOutPrintStream(out,
+				"   " + "[DEBUG]" + "   ", 4);
+		private static WLogPrintStream wlpsstart = new WLogOutPrintStream(out,
+				"   " + "[START]" + "   ", 4);
+		private static WLogPrintStream wlpsinfo = new WLogOutPrintStream(out,
+				"   " + "[INFO]" + "   ", 4);
+		private static WLogPrintStream wlpswarn = new WLogErrPrintStream(out,
+				"   " + "[WARN]" + "   ", 4);
+		private static WLogPrintStream wlpsfatal = new WLogErrPrintStream(err,
+				"   " + "[FATAL]" + "   ", 4);
+		private static WLogPrintStream wlpserr = new WLogErrPrintStream(err,
+				"   " + "[ERROR]" + "   ", 4);
+
+		/**
+		 * 输出debug消息 <br/>
+		 * 表示输出的日志为一个调试信息<br/>
+		 * 
+		 * @param o
+		 *            消息内容
+		 */
+		public static void debug(Object o) {
+			wlpsdebug.println(o);
 		}
 
-	}
-	
-	public void paint(Object o){
-		paintTo(INFO,RN,o);
-	}
-	
-	public void paintDhl(Object o){
-		paintTo(INFO,NULL,o);
-	}
-	
-	public void paintErr(Exception e){
-//		Display display = Display.getDefault();	
-//		Color red= display.getSystemColor(SWT.COLOR_RED);					
-//		StyledText st = ps.getTxtDebug();
-//		st.setForeground(red);
-		
-		StringWriter sw=new StringWriter(); 
-		PrintWriter pw=new PrintWriter(sw); 
-		e.printStackTrace(pw); 
-		String se =(sw.toString()); 
-		
-		paintTo(ERR,RN,se);
+		/**
+		 * 输出debug消息（不自动换行）<br/>
+		 * 表示输出的日志为一个调试信息<br/>
+		 * 
+		 * @param o
+		 *            消息内容
+		 */
+		public static void debugNl(Object o) {
+			wlpsdebug.print(o);
+		}
 
-		
+		/**
+		 * 输出启动消息<br/>
+		 */
+		public static void start() {
+			wlpsstart.println("start!");
+		}
+
+		/**
+		 * 输出info消息 <br/>
+		 * 表示输出的日志是一个系统提示<br/>
+		 * 
+		 * @param o
+		 *            消息内容
+		 */
+		public static void info(Object o) {
+			wlpsinfo.println(o);
+		}
+
+		/**
+		 * 输出info消息（不自动换行）<br/>
+		 * 表示输出的日志是一个系统提示<br/>
+		 * 
+		 * @param o
+		 *            消息内容
+		 */
+		public static void infoNl(Object o) {
+			wlpsinfo.print(o);
+		}
+
+		/**
+		 * 输出warn消息<br/>
+		 * 表示输出的日志是一个警告信息<br/>
+		 * 
+		 * @param e
+		 *            异常对象
+		 */
+		public static void warn(Exception e) {
+			wlpswarn.println(e);
+		}
+
+		/**
+		 * 输出fatal消息 <br/>
+		 * 表示输出的日志是一个导致系统崩溃严重错误<br/>
+		 * 
+		 * @param e
+		 *            异常对象
+		 */
+		public static void fatal(Throwable e) {
+			wlpsfatal.println(e);
+		}
+
+		/**
+		 * 输出error消息<br/>
+		 * 表示输出的日志是一个系统错误<br/>
+		 * 
+		 * @param e
+		 *            异常对象
+		 */
+		public static void error(Error e) {
+			wlpserr.println(e);
+		}
 	}
-	
+
 }
-
-
