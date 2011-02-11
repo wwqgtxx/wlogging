@@ -1,10 +1,12 @@
-package net.sf.wlogging;
+package net.sf.wlogging.ps;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-public class WLogErrPrintStream extends WLogPrintStream {
+import net.sf.wlogging.PaintMessageException;
+
+public class WLogErrPrintStream extends WLogAbstractPrintStream {
 
 	// PrintStream ps = null;
 	// String x = null;
@@ -38,7 +40,14 @@ public class WLogErrPrintStream extends WLogPrintStream {
 	}
 
 	public void println(Object o) {
-		if (containsAny(o.getClass().getName(), "Exception")) {
+		if (o.getClass().getName()
+				.equalsIgnoreCase("net.sf.wlogging.PaintMessageException")) {
+			PaintMessageException pme = (PaintMessageException) o;
+			String string = pme.getMessage();
+			string = getString(string);
+			ps.println(string);
+
+		} else if (containsAny(o.getClass().getName(), "Exception")) {
 			paintErr((Throwable) o);
 		} else if (containsAny(o.getClass().getName(), "Error")) {
 			paintErr((Throwable) o);

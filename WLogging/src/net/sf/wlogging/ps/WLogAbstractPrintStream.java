@@ -1,16 +1,12 @@
-package net.sf.wlogging;
+package net.sf.wlogging.ps;
 
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public abstract class WLogPrintStream extends PrintStream {
+public abstract class WLogAbstractPrintStream extends WLogPrintStream {
 
-	protected PrintStream ps = null;
-	protected String x = null;
-	protected int a;
-
-	public WLogPrintStream(PrintStream arg0, String x) {
+	public WLogAbstractPrintStream(PrintStream arg0, String x) {
 		this(arg0, x, 3);
 	}
 
@@ -21,11 +17,8 @@ public abstract class WLogPrintStream extends PrintStream {
 	 * @param a
 	 *            3++
 	 */
-	public WLogPrintStream(PrintStream arg0, String x, int a) {
-		super(arg0);
-		ps = arg0;
-		this.x = x;
-		this.a = a;
+	public WLogAbstractPrintStream(PrintStream arg0, String x, int a) {
+		super(arg0, x, a);
 	}
 
 	public abstract void print(Object obj);
@@ -80,12 +73,16 @@ public abstract class WLogPrintStream extends PrintStream {
 
 		StackTraceElement[] stacks = new Throwable().getStackTrace();
 
-		// for (int i = 0; i < stacks.length; i++) {
-		sb.append(stacks[a].getClassName()).append(".")
-				.append(stacks[a].getMethodName()).append("(")
-				.append(stacks[a].getLineNumber()).append(")");
-
-		// }
+		if (stacks.length <= a) {
+			for (int b = a; b >= stacks.length; b--)
+				sb.append(stacks[b].getClassName()).append(".")
+						.append(stacks[b].getMethodName()).append("(")
+						.append(stacks[b].getLineNumber()).append(")");
+		} else {
+			sb.append(stacks[a].getClassName()).append(".")
+					.append(stacks[a].getMethodName()).append("(")
+					.append(stacks[a].getLineNumber()).append(")");
+		}
 
 		return sb.toString();
 	}

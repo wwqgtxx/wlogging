@@ -1,10 +1,10 @@
-package net.sf.wlogging;
+package net.sf.wlogging.ps;
 
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class WLogOutPrintStream extends WLogPrintStream {
+public class WLogOutPrintStream extends WLogAbstractPrintStream {
 
 	// protected PrintStream ps = null;
 

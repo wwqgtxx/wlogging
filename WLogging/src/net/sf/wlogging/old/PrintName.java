@@ -1,6 +1,12 @@
-package net.sf.wlogging;
+package net.sf.wlogging.old;
 
 import java.io.PrintStream;
+
+import net.sf.wlogging.PaintMessageException;
+import net.sf.wlogging.WLogSystem;
+import net.sf.wlogging.ps.WLogErrPrintStream;
+import net.sf.wlogging.ps.WLogOutPrintStream;
+import net.sf.wlogging.ps.WLogPrintStream;
 
 /**
  * 日志主类<br/>
@@ -12,18 +18,8 @@ import java.io.PrintStream;
  */
 public class PrintName {
 
-	public static final PrintStream out = System.out;
-	public static final PrintStream err = System.err;
-
-	static {
-		WLogPrintStream wlps = new WLogOutPrintStream(out, "   " + "[OUT]"
-				+ "   ");
-		System.setOut(wlps);
-
-		WLogPrintStream wlpserr = new WLogErrPrintStream(err, "   " + "[ERROR]"
-				+ "   ", 4);
-		System.setErr(wlpserr);
-	}
+	public static final PrintStream out = WLogSystem.out;
+	public static final PrintStream err = WLogSystem.err;
 
 	/**
 	 * 
@@ -33,7 +29,7 @@ public class PrintName {
 	 * 
 	 * <br/>
 	 * 
-	 * 请使用"import net.sf.wlogging.PrintName.paint;"在每个文件首位<br/>
+	 * 请使用"import net.sf.wlogging.old.PrintName.paint;"在每个文件首位<br/>
 	 * 
 	 * <br/>
 	 * 
@@ -49,6 +45,12 @@ public class PrintName {
 	 * 
 	 * public static void infoNl(Object o)<br/>
 	 * 
+	 * public void warn(Object o)<br/>
+	 * 
+	 * public void fatal(Object o)<br/>
+	 * 
+	 * public void error(Object o)<br/>
+	 * 
 	 * public static void warn(Exception e)<br/>
 	 * 
 	 * public static void fatal(Throwable e)<br/>
@@ -58,6 +60,7 @@ public class PrintName {
 	 * 
 	 */
 	public static class paint {
+
 		private static WLogPrintStream wlpsdebug = new WLogOutPrintStream(out,
 				"   " + "[DEBUG]" + "   ", 4);
 		private static WLogPrintStream wlpsstart = new WLogOutPrintStream(out,
@@ -65,11 +68,11 @@ public class PrintName {
 		private static WLogPrintStream wlpsinfo = new WLogOutPrintStream(out,
 				"   " + "[INFO]" + "   ", 4);
 		private static WLogPrintStream wlpswarn = new WLogErrPrintStream(out,
-				"   " + "[WARN]" + "   ", 4);
+				"   " + "[WARN]" + "   ", 5);
 		private static WLogPrintStream wlpsfatal = new WLogErrPrintStream(err,
-				"   " + "[FATAL]" + "   ", 4);
+				"   " + "[FATAL]" + "   ", 5);
 		private static WLogPrintStream wlpserr = new WLogErrPrintStream(err,
-				"   " + "[ERROR]" + "   ", 4);
+				"   " + "[ERROR]" + "   ", 5);
 
 		/**
 		 * 输出debug消息 <br/>
@@ -133,15 +136,34 @@ public class PrintName {
 			wlpswarn.println(e);
 		}
 
+		public static void warn(Object o) {
+			wlpswarn.println(new PaintMessageException(o.toString()));
+		}
+
 		/**
 		 * 输出fatal消息 <br/>
 		 * 表示输出的日志是一个导致系统崩溃严重错误<br/>
+		 * 输出后会自动停止程序<br/>
 		 * 
 		 * @param e
 		 *            异常对象
 		 */
 		public static void fatal(Throwable e) {
 			wlpsfatal.println(e);
+			System.exit(1);
+		}
+
+		/**
+		 * 输出fatal消息 <br/>
+		 * 表示输出的日志是一个导致系统崩溃严重错误<br/>
+		 * 输出后会自动停止程序<br/>
+		 * 
+		 * @param o
+		 *            fatal消息
+		 */
+		public static void fatal(Object o) {
+			wlpsfatal.println(new PaintMessageException(o.toString()));
+			System.exit(1);
 		}
 
 		/**
@@ -153,6 +175,17 @@ public class PrintName {
 		 */
 		public static void error(Error e) {
 			wlpserr.println(e);
+		}
+
+		/**
+		 * 输出error消息<br/>
+		 * 表示输出的日志是一个系统错误<br/>
+		 * 
+		 * @param o
+		 *            fatal消息
+		 */
+		public static void error(Object o) {
+			wlpserr.println(new PaintMessageException(o.toString()));
 		}
 	}
 
