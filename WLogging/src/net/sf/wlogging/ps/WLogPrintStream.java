@@ -12,6 +12,14 @@ public class WLogPrintStream extends PrintStream {
 		this(arg0, x, 3);
 	}
 
+	public void printlnn(String name, Object message) {
+
+	}
+
+	public void printn(String name, Object message) {
+
+	}
+
 	/**
 	 * 
 	 * @param arg0

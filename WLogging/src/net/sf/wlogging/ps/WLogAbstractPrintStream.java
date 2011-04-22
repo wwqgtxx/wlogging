@@ -59,8 +59,16 @@ public abstract class WLogAbstractPrintStream extends WLogPrintStream {
 
 	public abstract void println(String x);
 
+	public abstract void printlnn(String name, Object message);
+
+	public abstract void printn(String name, Object message);
+
 	protected String getString(Object obj) {
 		return getTime() + x + "{" + getTraceInfo() + "}" + ": " + obj;
+	}
+
+	protected String getString(String name, Object obj) {
+		return getTime() + x + "{" + name + "}" + ": " + obj;
 	}
 
 	protected String getTime() {

@@ -1,8 +1,6 @@
 package net.sf.wlogging.ps;
 
 import java.io.PrintStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class WLogOutPrintStream extends WLogAbstractPrintStream {
 
@@ -27,104 +25,109 @@ public class WLogOutPrintStream extends WLogAbstractPrintStream {
 
 	}
 
+	@Override
 	public void print(Object obj) {
 		ps.print(getString(obj));
 	}
 
+	@Override
 	public void print(boolean obj) {
 		ps.print(getString(obj));
 	}
 
+	@Override
 	public void print(char obj) {
 		ps.print(getString(obj));
 	}
 
+	@Override
 	public void print(char[] obj) {
 		ps.print(getString(obj));
 	}
 
+	@Override
 	public void print(double obj) {
 		ps.print(getString(obj));
 	}
 
+	@Override
 	public void print(float obj) {
 		ps.print(getString(obj));
 	}
 
+	@Override
 	public void print(int obj) {
 		ps.print(getString(obj));
 	}
 
+	@Override
 	public void print(String obj) {
 		ps.print(getString(obj));
 	}
 
+	@Override
 	public void print(long obj) {
 		ps.print(getString(obj));
 	}
 
+	@Override
 	public void println(Object x) {
 		ps.println(getString(x));
 	}
 
+	@Override
 	public void println() {
 		ps.println();
 	}
 
+	@Override
 	public void println(boolean x) {
 		ps.println(getString(x));
 	}
 
+	@Override
 	public void println(char x) {
 		ps.println(getString(x));
 	}
 
+	@Override
 	public void println(char[] x) {
 		ps.println(getString(x));
 	}
 
+	@Override
 	public void println(double x) {
 		ps.println(getString(x));
 	}
 
+	@Override
 	public void println(float x) {
 		ps.println(getString(x));
 	}
 
+	@Override
 	public void println(int x) {
 		ps.println(getString(x));
 	}
 
+	@Override
 	public void println(long x) {
 		ps.println(getString(x));
 	}
 
+	@Override
 	public void println(String x) {
 		ps.println(getString(x));
 	}
 
-	protected String getString(Object obj) {
-		return getTime() + x + "{" + getTraceInfo() + "}" + ": " + obj;
+	@Override
+	public void printlnn(String name, Object message) {
+		ps.println(getString(name, message));
 	}
 
-	protected String getTime() {
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		return df.format(new Date());
-	}
-
-	protected String getTraceInfo() {
-		StringBuffer sb = new StringBuffer();
-
-		StackTraceElement[] stacks = new Throwable().getStackTrace();
-
-		// for (int i = 0; i < stacks.length; i++) {
-		sb.append(stacks[a].getClassName()).append(".")
-				.append(stacks[a].getMethodName()).append("(")
-				.append(stacks[a].getLineNumber()).append(")");
-
-		// }
-
-		return sb.toString();
+	@Override
+	public void printn(String name, Object message) {
+		ps.print(getString(name, message));
 	}
 
 }

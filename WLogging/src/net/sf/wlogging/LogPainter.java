@@ -34,7 +34,7 @@ import net.sf.wlogging.ps.WLogPrintStream;
  * 
  * 
  */
-public class WLogPaint {
+public class LogPainter {
 
 	private WLogPrintStream wlpsdebug = null;
 	private WLogPrintStream wlpsstart = null;
@@ -43,7 +43,7 @@ public class WLogPaint {
 	private WLogPrintStream wlpsfatal = null;
 	private WLogPrintStream wlpserr = null;
 
-	public WLogPaint(WLogPrintStream wlpsdebug, WLogPrintStream wlpsstart,
+	public LogPainter(WLogPrintStream wlpsdebug, WLogPrintStream wlpsstart,
 			WLogPrintStream wlpsinfo, WLogPrintStream wlpswarn,
 			WLogPrintStream wlpsfatal, WLogPrintStream wlpserr) {
 		this.wlpsdebug = wlpsdebug;
@@ -175,4 +175,87 @@ public class WLogPaint {
 	public void error(Object o) {
 		wlpserr.println(new PaintMessageException(o.toString()));
 	}
+
+	public void log(Level l, Object o) {
+		LogSystem.log.log(l, o);
+	}
+
+	public void log(Level l, String name, Object o) {
+		LogSystem.log.log(l, o);
+	}
+
+	public class Log {
+
+		private WLogPrintStream wlpsdebug = null;
+		private WLogPrintStream wlpsstart = null;
+		private WLogPrintStream wlpsinfo = null;
+		private WLogPrintStream wlpswarn = null;
+		private WLogPrintStream wlpsfatal = null;
+		private WLogPrintStream wlpserr = null;
+
+		public Log(WLogPrintStream wlpsdebug, WLogPrintStream wlpsstart,
+				WLogPrintStream wlpsinfo, WLogPrintStream wlpswarn,
+				WLogPrintStream wlpsfatal, WLogPrintStream wlpserr) {
+			this.wlpsdebug = wlpsdebug;
+			this.wlpserr = wlpserr;
+			this.wlpsfatal = wlpsfatal;
+			this.wlpsinfo = wlpsinfo;
+			this.wlpsstart = wlpsstart;
+			this.wlpswarn = wlpswarn;
+
+		}
+
+		public void print(Level l, Object o) {
+			log(l, o);
+		}
+
+		public void log(Level l, Object o) {
+			switch (l) {
+			case DEBUG:
+				wlpsdebug.println(o);
+				break;
+			case ERROR:
+				wlpserr.println(o);
+				break;
+			case FATAL:
+				wlpsfatal.println(o);
+				break;
+			case INFO:
+				wlpsinfo.println(o);
+				break;
+			case START:
+				wlpsstart.println(o);
+				break;
+			case WARN:
+				wlpswarn.println(o);
+				break;
+
+			}
+		}
+
+		public void log(Level l, String name, Object o) {
+			switch (l) {
+			case DEBUG:
+				wlpsdebug.printlnn(name, o);
+				break;
+			case ERROR:
+				wlpserr.printlnn(name, o);
+				break;
+			case FATAL:
+				wlpsfatal.printlnn(name, o);
+				break;
+			case INFO:
+				wlpsinfo.printlnn(name, o);
+				break;
+			case START:
+				wlpsstart.printlnn(name, o);
+				break;
+			case WARN:
+				wlpswarn.printlnn(name, o);
+				break;
+
+			}
+		}
+	}
+
 }

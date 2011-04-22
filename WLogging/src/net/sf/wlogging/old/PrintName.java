@@ -3,7 +3,7 @@ package net.sf.wlogging.old;
 import java.io.PrintStream;
 
 import net.sf.wlogging.PaintMessageException;
-import net.sf.wlogging.WLogSystem;
+import net.sf.wlogging.LogSystem;
 import net.sf.wlogging.ps.WLogErrPrintStream;
 import net.sf.wlogging.ps.WLogOutPrintStream;
 import net.sf.wlogging.ps.WLogPrintStream;
@@ -18,8 +18,8 @@ import net.sf.wlogging.ps.WLogPrintStream;
  */
 public class PrintName {
 
-	public static final PrintStream out = WLogSystem.out;
-	public static final PrintStream err = WLogSystem.err;
+	public static final PrintStream out = LogSystem.getOut();
+	public static final PrintStream err = LogSystem.getErr();
 
 	/**
 	 * 

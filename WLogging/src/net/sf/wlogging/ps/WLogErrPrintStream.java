@@ -172,4 +172,14 @@ public class WLogErrPrintStream extends WLogAbstractPrintStream {
 
 	}
 
+	@Override
+	public void printlnn(String name, Object message) {
+		ps.println(getString(name, message));
+	}
+
+	@Override
+	public void printn(String name, Object message) {
+		ps.print(getString(name, message));
+	}
+
 }
