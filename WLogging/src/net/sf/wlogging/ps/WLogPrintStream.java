@@ -2,7 +2,7 @@ package net.sf.wlogging.ps;
 
 import java.io.PrintStream;
 
-public class WLogPrintStream extends PrintStream {
+public abstract class WLogPrintStream extends PrintStream {
 
 	protected PrintStream ps = null;
 	protected String x = null;
@@ -12,13 +12,9 @@ public class WLogPrintStream extends PrintStream {
 		this(arg0, x, 3);
 	}
 
-	public void printlnn(String name, Object message) {
+	public abstract void printlnn(String name, Object message);
 
-	}
-
-	public void printn(String name, Object message) {
-
-	}
+	public abstract void printn(String name, Object message);
 
 	/**
 	 * 

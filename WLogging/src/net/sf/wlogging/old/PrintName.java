@@ -2,8 +2,8 @@ package net.sf.wlogging.old;
 
 import java.io.PrintStream;
 
-import net.sf.wlogging.PaintMessageException;
 import net.sf.wlogging.LogSystem;
+import net.sf.wlogging.PaintMessageException;
 import net.sf.wlogging.ps.WLogErrPrintStream;
 import net.sf.wlogging.ps.WLogOutPrintStream;
 import net.sf.wlogging.ps.WLogPrintStream;
@@ -16,9 +16,12 @@ import net.sf.wlogging.ps.WLogPrintStream;
  * @see PrintName.paint
  * 
  */
+@Deprecated
 public class PrintName {
 
+	@Deprecated
 	public static final PrintStream out = LogSystem.getOut();
+	@Deprecated
 	public static final PrintStream err = LogSystem.getErr();
 
 	/**
@@ -59,6 +62,7 @@ public class PrintName {
 	 * 
 	 * 
 	 */
+	@Deprecated
 	public static class paint {
 
 		private static WLogPrintStream wlpsdebug = new WLogOutPrintStream(out,
@@ -81,6 +85,7 @@ public class PrintName {
 		 * @param o
 		 *            消息内容
 		 */
+		@Deprecated
 		public static void debug(Object o) {
 			wlpsdebug.println(o);
 		}
@@ -92,6 +97,7 @@ public class PrintName {
 		 * @param o
 		 *            消息内容
 		 */
+		@Deprecated
 		public static void debugNl(Object o) {
 			wlpsdebug.print(o);
 		}
@@ -99,6 +105,7 @@ public class PrintName {
 		/**
 		 * 输出启动消息<br/>
 		 */
+		@Deprecated
 		public static void start() {
 			wlpsstart.println("start!");
 		}
@@ -110,6 +117,7 @@ public class PrintName {
 		 * @param o
 		 *            消息内容
 		 */
+		@Deprecated
 		public static void info(Object o) {
 			wlpsinfo.println(o);
 		}
@@ -121,6 +129,7 @@ public class PrintName {
 		 * @param o
 		 *            消息内容
 		 */
+		@Deprecated
 		public static void infoNl(Object o) {
 			wlpsinfo.print(o);
 		}
@@ -132,10 +141,12 @@ public class PrintName {
 		 * @param e
 		 *            异常对象
 		 */
+		@Deprecated
 		public static void warn(Exception e) {
 			wlpswarn.println(e);
 		}
 
+		@Deprecated
 		public static void warn(Object o) {
 			wlpswarn.println(new PaintMessageException(o.toString()));
 		}
@@ -148,6 +159,7 @@ public class PrintName {
 		 * @param e
 		 *            异常对象
 		 */
+		@Deprecated
 		public static void fatal(Throwable e) {
 			wlpsfatal.println(e);
 			System.exit(1);
@@ -161,6 +173,7 @@ public class PrintName {
 		 * @param o
 		 *            fatal消息
 		 */
+		@Deprecated
 		public static void fatal(Object o) {
 			wlpsfatal.println(new PaintMessageException(o.toString()));
 			System.exit(1);
@@ -173,6 +186,7 @@ public class PrintName {
 		 * @param e
 		 *            异常对象
 		 */
+		@Deprecated
 		public static void error(Error e) {
 			wlpserr.println(e);
 		}
@@ -184,6 +198,7 @@ public class PrintName {
 		 * @param o
 		 *            fatal消息
 		 */
+		@Deprecated
 		public static void error(Object o) {
 			wlpserr.println(new PaintMessageException(o.toString()));
 		}
