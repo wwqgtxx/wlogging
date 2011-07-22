@@ -1,20 +1,34 @@
 package net.sf.wlogging;
 
+import java.io.FileInputStream;
 import java.io.PrintStream;
-import java.lang.reflect.Constructor;
+import java.util.Properties;
 
-import net.sf.readxml.ReadXml;
+import net.sf.wlogging.appender.Appender;
+import net.sf.wlogging.appender.SysOutAppender;
 import net.sf.wlogging.ps.WLogErrPrintStream;
 import net.sf.wlogging.ps.WLogOutPrintStream;
 import net.sf.wlogging.ps.WLogPrintStream;
 
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 public final class LogSystem {
-	protected static final PrintStream out = System.out;
-	protected static final PrintStream err = System.err;
-	private static int NUM = 6;
+	private final static String APPENDER_NAME = "net.sf.wlogging.appender";
+	private final static String NUM_NAME = "net.sf.wlogging.num";
+	private static Appender appender = null;
+	private static PrintStream out = null;
+	private static PrintStream err = null;
+	private static int NUM = 0;
+	private static WLogPrintStream wlpsdebug, wlpsstart, wlpsinfo, wlpswarn,
+			wlpsfatal, wlpserr;
+	static {
+		init1();
+		init2(out, err);
+		readSet(new LogSystem());
+	}
+
+	static LogPainter log = new LogPainter(wlpsdebug, wlpsstart, wlpsinfo,
+			wlpswarn, wlpsfatal, wlpserr);
 
 	public static PrintStream getOut() {
 		return out;
@@ -24,10 +38,14 @@ public final class LogSystem {
 		return err;
 	}
 
-	private static WLogPrintStream wlpsdebug, wlpsstart, wlpsinfo, wlpswarn,
-			wlpsfatal, wlpserr;
+	private synchronized static void init1() {
+		appender = SysOutAppender.getAppender();
+		out = appender.getOut();
+		err = appender.getErr();
+		NUM = 6;
+	}
 
-	static {
+	private synchronized static void init2(PrintStream out, PrintStream err) {
 		wlpsdebug = new WLogOutPrintStream(out, "   " + "[DEBUG]" + "   ", NUM);
 		wlpsstart = new WLogOutPrintStream(out, "   " + "[START]" + "   ", NUM);
 		wlpsinfo = new WLogOutPrintStream(out, "   " + "[INFO]" + "   ", NUM);
@@ -37,107 +55,110 @@ public final class LogSystem {
 				NUM + 1);
 		wlpserr = new WLogErrPrintStream(err, "   " + "[ERROR]" + "   ",
 				NUM + 1);
-
-	}
-
-	@Deprecated
-	public static void readXml(String dir, Object object) {
-		try {
-			Node[] node = ReadXml.getXmlNodeWithclass(dir, object);
-			wlpsdebug = getwps("wlpsdebug", node);
-			wlpsstart = getwps("wlpsstart", node);
-			wlpsinfo = getwps("wlpsinfo", node);
-			wlpswarn = getwps("wlpswarn", node);
-			wlpsfatal = getwps("wlpsfatal", node);
-			wlpserr = getwps("wlpserr", node);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (log == null) {
+			log = new LogPainter(wlpsdebug, wlpsstart, wlpsinfo, wlpswarn,
+					wlpsfatal, wlpserr);
+		} else {
+			log.setPrintStream(wlpsdebug, wlpsstart, wlpsinfo, wlpswarn,
+					wlpsfatal, wlpserr);
 		}
 	}
 
-	private static WLogPrintStream getwps(String s, Node[] node) {
+	public synchronized static void readSet(String xmldir, String propdir,
+			Object object) {
+		if (log != null && out != null && err != null && appender != null) {
+			synchronized (log) {
+				synchronized (out) {
+					synchronized (err) {
+						synchronized (appender) {
+							readSet0(xmldir, propdir, object);
+						}
 
-		String s_wlpsdebug_Class = null, s_wlpsdebug_PrintStream = null, s_wlpsdebug_String = null, s_wlpsdebug_int = null;
-
-		for (int i = 0; i < node.length; i++) {
-			if (node[i].getNodeName().equalsIgnoreCase(s)) {
-				NodeList nl = node[i].getChildNodes();
-				for (int ii = 0; ii < nl.getLength(); ii++) {
-					if (nl.item(ii).getNodeName().equalsIgnoreCase("Class")) {
-						s_wlpsdebug_Class = nl.item(ii).getFirstChild()
-								.getNodeValue();
-					}
-					if (nl.item(ii).getNodeName()
-							.equalsIgnoreCase("PrintStream")) {
-						s_wlpsdebug_PrintStream = nl.item(ii).getFirstChild()
-								.getNodeValue();
-					}
-					if (nl.item(ii).getNodeName().equalsIgnoreCase("String")) {
-						s_wlpsdebug_String = nl.item(ii).getFirstChild()
-								.getNodeValue();
-					}
-					if (nl.item(ii).getNodeName().equalsIgnoreCase("int")) {
-						s_wlpsdebug_int = nl.item(ii).getFirstChild()
-								.getNodeValue();
 					}
 				}
-
 			}
-
+		} else {
+			readSet0(xmldir, propdir, object);
 		}
-
-		Class<?> c = null;
-		try {
-			System.out.println(s_wlpsdebug_Class);
-			c = Class.forName(s_wlpsdebug_Class);
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Class<?>[] ptype = new Class[] { PrintStream.class, String.class,
-				int.class };
-		Constructor<?> ctor = null;
-		try {
-			ctor = c.getConstructor(ptype);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		Object[] obj = null;
-
-		if (s_wlpsdebug_PrintStream.equalsIgnoreCase("out")) {
-			obj = new Object[] { out, s_wlpsdebug_String,
-					Integer.parseInt(s_wlpsdebug_int) };
-		}
-		if (s_wlpsdebug_PrintStream.equalsIgnoreCase("err")) {
-			obj = new Object[] { out, s_wlpsdebug_String,
-					Integer.parseInt(s_wlpsdebug_int) };
-		}
-
-		WLogPrintStream o_wlpsdebug = null;
-		try {
-			o_wlpsdebug = (WLogPrintStream) ctor.newInstance(obj);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return o_wlpsdebug;
 
 	}
 
-	@Deprecated
-	public static void readXml(Object object) {
-		readXml("wlogging.xml", object);
+	private static void readSet0(String xmldir, String propdir, Object object) {
+		int num2 = 0;
+		Appender app = null;
+		try {
+			Node[] node = ReadXml.getXmlNodeWithclass(xmldir, object);
+			app = getAppender(node);
+			num2 = Integer.parseInt(ReadXml.getString("num", node));
+
+		} catch (Exception e) {
+		}
+		if (app == null) {
+			Properties prop = new Properties();
+			try {
+				FileInputStream in = new FileInputStream(object.getClass()
+						.getClassLoader().getResource(propdir).getPath());
+				prop.load(in);
+				in.close();
+				app = getAppender(prop);
+				num2 = Integer.parseInt(prop.getProperty(NUM_NAME));
+				prop.clear();
+			} catch (Exception e) {
+				prop.clear();
+			}
+		}
+		if (num2 != 0) {
+			NUM = num2;
+		}
+		if (app != null) {
+			appender = app;
+			out = appender.getOut();
+			err = appender.getErr();
+			init2(out, err);
+		}
+
+	}
+
+	private static Appender getAppender(Node[] node) {
+		try {
+			Class<?> class1 = Class
+					.forName(ReadXml.getString("appender", node));
+			Appender appender = (Appender) class1.getMethod("getAppender")
+					.invoke(null);
+			return appender;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	private static Appender getAppender(Properties prop) {
+		try {
+			Class<?> class1 = Class.forName(getString(APPENDER_NAME, prop));
+			Appender appender = (Appender) class1.getMethod("getAppender")
+					.invoke(null);
+			return appender;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	private static String getString(String s, Properties prop) {
+		try {
+			String class_name = null;
+			class_name = prop.getProperty(s);
+			return class_name;
+		} catch (Exception e) {
+			return null;
+		}
+
+	}
+
+	public static void readSet(Object object) {
+		readSet("wlogging.xml", "wlogging.properties", object);
 	}
 
 	private LogSystem() {
 	}
-
-	static LogPainter log = new LogPainter(wlpsdebug, wlpsstart, wlpsinfo,
-			wlpswarn, wlpsfatal, wlpserr);
 
 	@Deprecated
 	public static void log(Level l, Object o) {
@@ -193,6 +214,18 @@ public final class LogSystem {
 			this.wlpsstart = wlpsstart;
 			this.wlpswarn = wlpswarn;
 
+		}
+
+		private synchronized void setPrintStream(WLogPrintStream wlpsdebug,
+				WLogPrintStream wlpsstart, WLogPrintStream wlpsinfo,
+				WLogPrintStream wlpswarn, WLogPrintStream wlpsfatal,
+				WLogPrintStream wlpserr) {
+			this.wlpsdebug = wlpsdebug;
+			this.wlpserr = wlpserr;
+			this.wlpsfatal = wlpsfatal;
+			this.wlpsinfo = wlpsinfo;
+			this.wlpsstart = wlpsstart;
+			this.wlpswarn = wlpswarn;
 		}
 
 		/**
