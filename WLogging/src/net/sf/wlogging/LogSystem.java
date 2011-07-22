@@ -15,6 +15,7 @@ import org.w3c.dom.Node;
 public final class LogSystem {
 	private final static String APPENDER_NAME = "net.sf.wlogging.appender";
 	private final static String NUM_NAME = "net.sf.wlogging.num";
+	private final static int NUM_SMALLEST = 6;
 	private static Appender appender = null;
 	private static PrintStream out = null;
 	private static PrintStream err = null;
@@ -42,19 +43,22 @@ public final class LogSystem {
 		appender = SysOutAppender.getAppender();
 		out = appender.getOut();
 		err = appender.getErr();
-		NUM = 6;
+		NUM = 0;
 	}
 
 	private synchronized static void init2(PrintStream out, PrintStream err) {
-		wlpsdebug = new WLogOutPrintStream(out, "   " + "[DEBUG]" + "   ", NUM);
-		wlpsstart = new WLogOutPrintStream(out, "   " + "[START]" + "   ", NUM);
-		wlpsinfo = new WLogOutPrintStream(out, "   " + "[INFO]" + "   ", NUM);
+		wlpsdebug = new WLogOutPrintStream(out, "   " + "[DEBUG]" + "   ",
+				NUM_SMALLEST + NUM);
+		wlpsstart = new WLogOutPrintStream(out, "   " + "[START]" + "   ",
+				NUM_SMALLEST + NUM);
+		wlpsinfo = new WLogOutPrintStream(out, "   " + "[INFO]" + "   ",
+				NUM_SMALLEST + NUM);
 		wlpswarn = new WLogErrPrintStream(out, "   " + "[WARN]" + "   ",
-				NUM + 1);
+				NUM_SMALLEST + NUM + 1);
 		wlpsfatal = new WLogErrPrintStream(err, "   " + "[FATAL]" + "   ",
-				NUM + 1);
+				NUM_SMALLEST + NUM + 1);
 		wlpserr = new WLogErrPrintStream(err, "   " + "[ERROR]" + "   ",
-				NUM + 1);
+				NUM_SMALLEST + NUM + 1);
 		if (log == null) {
 			log = new LogPainter(wlpsdebug, wlpsstart, wlpsinfo, wlpswarn,
 					wlpsfatal, wlpserr);
